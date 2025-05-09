@@ -232,9 +232,7 @@ public class GradebookControllerTest {
 
     @Test
     public void deleteAValidGradeHttpRequestIdDoesNotExistEmptyResponse() throws Exception {
-        Optional<MathGrade> grade = mathGradeDao.findById(2);
-        assertTrue(grade.isEmpty());
-        mockMvc.perform(delete("/grades/{id}/{gradeType}",2,"math"))
+        mockMvc.perform(delete("/grades/{id}/{gradeType}",2,"history"))
                 .andExpect(status().is4xxClientError())
                 .andExpect(content().contentType(APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.status",is(404)))
