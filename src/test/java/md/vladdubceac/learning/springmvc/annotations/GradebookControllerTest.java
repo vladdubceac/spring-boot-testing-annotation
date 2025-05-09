@@ -230,6 +230,17 @@ public class GradebookControllerTest {
                 .andExpect(jsonPath("$.studentGrades.mathGradeResults",hasSize(0)));
     }
 
+    @Test
+    public void deleteAValidGradeHttpRequestIdDoesNotExistEmptyResponse() throws Exception {
+        Optional<MathGrade> grade = mathGradeDao.findById(2);
+        assertTrue(grade.isEmpty());
+        mockMvc.perform(delete("/grades/{id}/{gradeType}",2,"math"))
+                .andExpect(status().is4xxClientError())
+                .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$.status",is(404)))
+                .andExpect(jsonPath("$.message",is("Student or Grade was not found")));
+    }
+
     @AfterEach
     public void setupAfterTransaction() {
         jdbc.execute(sqlDeleteStudent);
