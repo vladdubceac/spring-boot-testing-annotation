@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import md.vladdubceac.learning.springmvc.annotations.models.CollegeStudent;
+import md.vladdubceac.learning.springmvc.annotations.models.MathGrade;
 import md.vladdubceac.learning.springmvc.annotations.repository.HistoryGradesDao;
 import md.vladdubceac.learning.springmvc.annotations.repository.MathGradesDao;
 import md.vladdubceac.learning.springmvc.annotations.repository.ScienceGradesDao;
@@ -213,6 +214,20 @@ public class GradebookControllerTest {
                 .andExpect(jsonPath("$.status", is(404)))
                 .andExpect(jsonPath("$.message", is("Student or Grade was not found")));
 
+    }
+
+    @Test
+    public void deleteAValidGradeHttpRequest() throws Exception {
+        Optional<MathGrade> mathGrade = mathGradeDao.findById(1);
+        assertTrue(mathGrade.isPresent());
+        mockMvc.perform(delete("/grades/{id}/{gradeType}",1,"math"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$.id",is(1)))
+                .andExpect(jsonPath("$.firstname",is("Vlad")))
+                .andExpect(jsonPath("$.lastname",is("Dubceac")))
+                .andExpect(jsonPath("$.emailAddress",is("dubceacvlad@gmail.com")))
+                .andExpect(jsonPath("$.studentGrades.mathGradeResults",hasSize(0)));
     }
 
     @AfterEach
