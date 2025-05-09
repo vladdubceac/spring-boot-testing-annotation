@@ -32,8 +32,7 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @TestPropertySource("/application-test.properties")
@@ -184,6 +183,16 @@ public class GradebookControllerTest {
                 .andExpect(jsonPath("$.firstname",is("Vlad")))
                 .andExpect(jsonPath("$.lastname",is("Dubceac")))
                 .andExpect(jsonPath("$.emailAddress",is("dubceacvlad@gmail.com")));
+    }
+
+    @Test
+    public void studentInformationHttpRequestEmptyResponse() throws Exception {
+        Optional<CollegeStudent> student = studentDao.findById(0);
+        assertFalse(student.isPresent());
+        mockMvc.perform(get("/studentInformation/{id}",0))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.status", is(404)))
+                .andExpect(jsonPath("$.message", is("Student or Grade was not found")));
     }
 
     @AfterEach
