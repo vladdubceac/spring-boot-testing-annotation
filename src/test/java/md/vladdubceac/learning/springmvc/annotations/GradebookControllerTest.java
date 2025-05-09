@@ -1,5 +1,6 @@
 package md.vladdubceac.learning.springmvc.annotations;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -27,6 +28,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @TestPropertySource("/application-test.properties")
@@ -123,6 +126,23 @@ public class GradebookControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/")).andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$",hasSize(2)));
+    }
+
+    @Test
+    public void createStudentHttpRequest() throws Exception {
+        student.setFirstname("first");
+        student.setLastname("last");
+        student.setEmailAddress("first.last@email.com");
+
+        mockMvc.perform(post("/")
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(objectMapper.writeValueAsString(student)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$",hasSize(2)));
+
+        CollegeStudent verifyStudent = studentDao.findByEmailAddress("first.last@email.com");
+        assertNotNull(verifyStudent, "Student should be valid");
+
     }
 
     @AfterEach
