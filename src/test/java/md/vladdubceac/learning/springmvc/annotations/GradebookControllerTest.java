@@ -231,8 +231,17 @@ public class GradebookControllerTest {
     }
 
     @Test
-    public void deleteAValidGradeHttpRequestIdDoesNotExistEmptyResponse() throws Exception {
+    public void deleteGradeHttpRequestIdDoesNotExistEmptyResponse() throws Exception {
         mockMvc.perform(delete("/grades/{id}/{gradeType}",2,"history"))
+                .andExpect(status().is4xxClientError())
+                .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$.status",is(404)))
+                .andExpect(jsonPath("$.message",is("Student or Grade was not found")));
+    }
+
+    @Test
+    public void deleteANonValidGradeHttpRequest() throws Exception {
+        mockMvc.perform(delete("/grades/{id}/{gradeType}",1,"literature"))
                 .andExpect(status().is4xxClientError())
                 .andExpect(content().contentType(APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.status",is(404)))
